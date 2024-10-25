@@ -211,7 +211,7 @@ if REPENTOGON then
     end)
     
     ImGui.AddElement('shenanigansTabColorFx', '', ImGuiElement.SeparatorText, 'Color Modifier')
-    mod:doColorModifier('shenanigansTabColorFx', 'shenanigansClrColorFxModifier', 'shenanigansFltColorFxModifierStrength', 'shenanigansFltColorFxModifierBrightness', 'shenanigansFltColorFxModifierContrast', 'shenanigansBtnColorModifierReset', function(color)
+    mod:doColorModifier('shenanigansTabColorFx', 'shenanigansClrColorFxModifier', 'shenanigansFltColorFxModifierStrength', 'shenanigansFltColorFxModifierBrightness', 'shenanigansFltColorFxModifierContrast', 'shenanigansBtnColorFxModifierReset', function(color)
       -- game:SetColorModifier
       local room = game:GetRoom()
       room:GetFXParams().ColorModifier = ColorModifier(color.R, color.G, color.B, color.A, color.Brightness, color.Contrast)
