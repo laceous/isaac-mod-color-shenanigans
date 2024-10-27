@@ -623,39 +623,43 @@ if REPENTOGON then
     
     if Isaac.IsInGame() then
       local level = game:GetLevel()
-      local stage = game:IsGreedMode() and greedStageMap[level:GetStage()] or stageMap[level:GetStage()]
       local stageType = level:GetStageType()
       local room = level:GetCurrentRoom()
       local backdrop = room:GetBackdropType()
       
-      if not stage then
-        stage = -1
+      local stage
+      if game:IsGreedMode() then
+        stage = greedStageMap[level:GetStage()]
+      else
+        stage = stageMap[level:GetStage()]
       end
       
-      -- look for stage/altStages/backdrop match
-      for _, v in ipairs(fxParams) do
-        if v.stage == stage and v.altStages & 1<<stageType ~= 0 and v.backdrop == backdrop then
-          fxParam = v
-          break
-        end
-      end
-      
-      -- look for backdrop match
-      if not fxParam then
+      if stage then
+        -- look for stage/altStages/backdrop match
         for _, v in ipairs(fxParams) do
-          if v.stage == nil and v.altStages == nil and v.backdrop == backdrop then
+          if v.stage == stage and v.altStages & 1<<stageType ~= 0 and v.backdrop == backdrop then
             fxParam = v
             break
           end
         end
-      end
-      
-      -- look for stage/altStages match
-      if not fxParam then
-        for _, v in ipairs(fxParams) do
-          if v.stage == stage and v.altStages & 1<<stageType ~= 0 and v.backdrop == nil then
-            fxParam = v
-            break
+        
+        -- look for backdrop match
+        if not fxParam then
+          for _, v in ipairs(fxParams) do
+            if v.stage == nil and v.altStages == nil and v.backdrop == backdrop then
+              fxParam = v
+              break
+            end
+          end
+        end
+        
+        -- look for stage/altStages match
+        if not fxParam then
+          for _, v in ipairs(fxParams) do
+            if v.stage == stage and v.altStages & 1<<stageType ~= 0 and v.backdrop == nil then
+              fxParam = v
+              break
+            end
           end
         end
       end
