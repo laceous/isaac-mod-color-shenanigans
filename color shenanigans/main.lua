@@ -617,6 +617,10 @@ if REPENTOGON then
       [LevelStage.STAGE5_GREED] = 5,
       [LevelStage.STAGE6_GREED] = 1, -- cellar?
       [LevelStage.STAGE7_GREED] = 1, -- cellar?
+      [8]                       = 1,
+      [9]                       = 1,
+      [10]                      = 1,
+      [11]                      = 1,
     }
     
     local fxParam = nil
@@ -633,33 +637,34 @@ if REPENTOGON then
       else
         stage = stageMap[level:GetStage()]
       end
+      if not stage then
+        stage = -1
+      end
       
-      if stage then
-        -- look for stage/altStages/backdrop match
+      -- look for stage/altStages/backdrop match
+      for _, v in ipairs(fxParams) do
+        if v.stage == stage and v.altStages & 1<<stageType ~= 0 and v.backdrop == backdrop then
+          fxParam = v
+          break
+        end
+      end
+      
+      -- look for backdrop match
+      if not fxParam then
         for _, v in ipairs(fxParams) do
-          if v.stage == stage and v.altStages & 1<<stageType ~= 0 and v.backdrop == backdrop then
+          if v.stage == nil and v.altStages == nil and v.backdrop == backdrop then
             fxParam = v
             break
           end
         end
-        
-        -- look for backdrop match
-        if not fxParam then
-          for _, v in ipairs(fxParams) do
-            if v.stage == nil and v.altStages == nil and v.backdrop == backdrop then
-              fxParam = v
-              break
-            end
-          end
-        end
-        
-        -- look for stage/altStages match
-        if not fxParam then
-          for _, v in ipairs(fxParams) do
-            if v.stage == stage and v.altStages & 1<<stageType ~= 0 and v.backdrop == nil then
-              fxParam = v
-              break
-            end
+      end
+      
+      -- look for stage/altStages match
+      if not fxParam then
+        for _, v in ipairs(fxParams) do
+          if v.stage == stage and v.altStages & 1<<stageType ~= 0 and v.backdrop == nil then
+            fxParam = v
+            break
           end
         end
       end
