@@ -3,6 +3,8 @@ local game = Game()
 
 if REPENTOGON then
   mod.evaluatePlayerCache = false
+  mod.resetColorModifierMenu = false
+  mod.lastActiveMenu = -1
   
   function mod:onRender()
     mod:RemoveCallback(ModCallbacks.MC_MAIN_MENU_RENDER, mod.onRender)
@@ -10,8 +12,22 @@ if REPENTOGON then
     mod:setupImGui()
   end
   
+  function mod:onMainMenuRender()
+    local activeMenu = MenuManager.GetActiveMenu()
+    
+    if activeMenu ~= mod.lastActiveMenu and mod.resetColorModifierMenu then
+      local defaults = mod:getDefaults('colorModifier')
+      MenuManager.SetColorModifier(ColorModifier(defaults.R, defaults.G, defaults.B, defaults.A, defaults.Brightness, defaults.Contrast), true, 0.015)
+      mod.resetColorModifierMenu = false
+    end
+    
+    mod.lastActiveMenu = activeMenu
+  end
+  
   function mod:onGameExit()
     mod.evaluatePlayerCache = false
+    mod.resetColorModifierMenu = false
+    mod.lastActiveMenu = -1
   end
   
   function mod:onNewRoom()
@@ -262,6 +278,7 @@ if REPENTOGON then
       local gotActiveMenu, activeMenu = pcall(MenuManager.GetActiveMenu)
       if gotActiveMenu then
         MenuManager.SetColorModifier(ColorModifier(color.R, color.G, color.B, color.A, color.Brightness, color.Contrast), not ImGui.IsVisible(), 0.015)
+        mod.resetColorModifierMenu = true
       end
     end, 'colorModifier')
   end
@@ -695,6 +712,7 @@ if REPENTOGON then
   
   mod:AddCallback(ModCallbacks.MC_MAIN_MENU_RENDER, mod.onRender)
   mod:AddCallback(ModCallbacks.MC_POST_RENDER, mod.onRender)
+  mod:AddCallback(ModCallbacks.MC_MAIN_MENU_RENDER, mod.onMainMenuRender)
   mod:AddCallback(ModCallbacks.MC_PRE_GAME_EXIT, mod.onGameExit)
   mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, mod.onNewRoom)
 end
