@@ -52,6 +52,7 @@ if REPENTOGON then
     ImGui.AddTab('shenanigansTabBarColor', 'shenanigansTabColorWater', 'Water')
     ImGui.AddTab('shenanigansTabBarColor', 'shenanigansTabColorEntities', 'Entities')
     ImGui.AddTab('shenanigansTabBarColor', 'shenanigansTabColorFx', 'FX')
+    ImGui.AddTab('shenanigansTabBarColor', 'shenanigansTabColorMenu', 'Menu')
     
     local backdropTypes = {}
     for i = 0, BackdropType.NUM_BACKDROPS - 1 do -- sequential 0-60
@@ -212,10 +213,11 @@ if REPENTOGON then
     
     ImGui.AddElement('shenanigansTabColorFx', '', ImGuiElement.SeparatorText, 'Color Modifier')
     mod:doColorModifier('shenanigansTabColorFx', 'shenanigansClrColorFxModifier', 'shenanigansFltColorFxModifierStrength', 'shenanigansFltColorFxModifierBrightness', 'shenanigansFltColorFxModifierContrast', 'shenanigansBtnColorFxModifierReset', function(color)
-      -- game:SetColorModifier
-      local room = game:GetRoom()
-      room:GetFXParams().ColorModifier = ColorModifier(color.R, color.G, color.B, color.A, color.Brightness, color.Contrast)
-      room:UpdateColorModifier(true, not (game:IsPaused() and ImGui.IsVisible()), 0.015)
+      if Isaac.IsInGame() then
+        local room = game:GetRoom() -- game:SetColorModifier
+        room:GetFXParams().ColorModifier = ColorModifier(color.R, color.G, color.B, color.A, color.Brightness, color.Contrast)
+        room:UpdateColorModifier(true, not (game:IsPaused() and ImGui.IsVisible()), 0.015)
+      end
     end, 'colorModifier')
     
     ImGui.AddElement('shenanigansTabColorFx', '', ImGuiElement.SeparatorText, 'Light Color')
@@ -254,9 +256,17 @@ if REPENTOGON then
       local room = game:GetRoom()
       room:GetFXParams().ShadowColor = KColor(color.R, color.G, color.B, color.A)
     end, 'shadowColor')
+    
+    ImGui.AddElement('shenanigansTabColorMenu', '', ImGuiElement.SeparatorText, 'Color Modifier')
+    mod:doColorModifier('shenanigansTabColorMenu', 'shenanigansClrColorMenuModifier', 'shenanigansFltColorMenuModifierStrength', 'shenanigansFltColorMenuModifierBrightness', 'shenanigansFltColorMenuModifierContrast', 'shenanigansBtnColorMenuModifierReset', function(color)
+      local gotActiveMenu, activeMenu = pcall(MenuManager.GetActiveMenu)
+      if gotActiveMenu then
+        MenuManager.SetColorModifier(ColorModifier(color.R, color.G, color.B, color.A, color.Brightness, color.Contrast), not ImGui.IsVisible(), 0.015)
+      end
+    end, 'colorModifier')
   end
   
-  function mod:doColorModifier(tab, clrId, fltStrengthId, fltBrightnessId, fltContrastId, btnResetId, inGameFunc, defaultsName)
+  function mod:doColorModifier(tab, clrId, fltStrengthId, fltBrightnessId, fltContrastId, btnResetId, func, defaultsName)
     local defaults = mod:getDefaults(defaultsName)
     local color = {
       R = defaults.r or 1,
@@ -280,39 +290,29 @@ if REPENTOGON then
       ImGui.UpdateData(fltBrightnessId, ImGuiData.Value, color.Brightness)
       ImGui.UpdateData(fltContrastId, ImGuiData.Value, color.Contrast)
       
-      if Isaac.IsInGame() then
-        inGameFunc(color)
-      end
+      func(color)
     end, true)
     ImGui.AddInputColor(tab, clrId, 'Color', function(r, g, b)
       color.R = r
       color.G = g
       color.B = b
       
-      if Isaac.IsInGame() then
-        inGameFunc(color)
-      end
+      func(color)
     end, color.R, color.G, color.B)
     ImGui.AddDragFloat(tab, fltStrengthId, 'Strength', function(f)
       color.A = f
       
-      if Isaac.IsInGame() then
-        inGameFunc(color)
-      end
+      func(color)
     end, color.A, 0.02, -25.0, 25.0, '%.2f')
     ImGui.AddDragFloat(tab, fltBrightnessId, 'Brightness', function(f)
       color.Brightness = f
       
-      if Isaac.IsInGame() then
-        inGameFunc(color)
-      end
+      func(color)
     end, color.Brightness, 0.01, -5.0, 5.0, '%.2f')
     ImGui.AddDragFloat(tab, fltContrastId, 'Contrast', function(f)
       color.Contrast = f
       
-      if Isaac.IsInGame() then
-        inGameFunc(color)
-      end
+      func(color)
     end, color.Contrast, 0.01, -5.0, 5.0, '%.2f')
   end
   
