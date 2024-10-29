@@ -17,7 +17,7 @@ if REPENTOGON then
     
     if activeMenu ~= mod.lastActiveMenu and mod.resetColorModifierMenu then
       local defaults = mod:getDefaults('colorModifier')
-      MenuManager.SetColorModifier(ColorModifier(defaults.R, defaults.G, defaults.B, defaults.A, defaults.Brightness, defaults.Contrast), true, 0.015)
+      MenuManager.SetColorModifier(ColorModifier(defaults.r, defaults.g, defaults.b, defaults.a, defaults.brightness, defaults.contrast), true, 0.015)
       mod.resetColorModifierMenu = false
     end
     
