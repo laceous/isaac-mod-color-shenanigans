@@ -227,11 +227,11 @@ if REPENTOGON then
     end)
     
     ImGui.AddElement('shenanigansTabColorFx', '', ImGuiElement.SeparatorText, 'Color Modifier')
-    mod:doColorModifier('shenanigansTabColorFx', 'shenanigansClrColorFxModifier', 'shenanigansFltColorFxModifierStrength', 'shenanigansFltColorFxModifierBrightness', 'shenanigansFltColorFxModifierContrast', 'shenanigansBtnColorFxModifierReset', function(color)
+    mod:doColorModifier('shenanigansTabColorFx', 'shenanigansClrColorFxModifier', 'shenanigansFltColorFxModifierStrength', 'shenanigansFltColorFxModifierBrightness', 'shenanigansFltColorFxModifierContrast', 'shenanigansChkColorFxModifierProcess', 'shenanigansBtnColorFxModifierReset', function(color)
       if Isaac.IsInGame() then
         local room = game:GetRoom() -- game:SetColorModifier
         room:GetFXParams().ColorModifier = ColorModifier(color.R, color.G, color.B, color.A, color.Brightness, color.Contrast)
-        room:UpdateColorModifier(true, not (game:IsPaused() and ImGui.IsVisible()), 0.015)
+        room:UpdateColorModifier(color.Process, not (game:IsPaused() and ImGui.IsVisible()), 0.015)
       else
         local gotActiveMenu, activeMenu = pcall(MenuManager.GetActiveMenu)
         if gotActiveMenu then
@@ -279,7 +279,7 @@ if REPENTOGON then
     end, 'shadowColor')
   end
   
-  function mod:doColorModifier(tab, clrId, fltStrengthId, fltBrightnessId, fltContrastId, btnResetId, func, defaultsName)
+  function mod:doColorModifier(tab, clrId, fltStrengthId, fltBrightnessId, fltContrastId, chkProcessId, btnResetId, func, defaultsName)
     local defaults = mod:getDefaults(defaultsName)
     local color = {
       R = defaults.r or 1,
@@ -287,7 +287,8 @@ if REPENTOGON then
       B = defaults.b or 1,
       A = defaults.a or 0,
       Brightness = defaults.brightness or 0,
-      Contrast = defaults.contrast or 1
+      Contrast = defaults.contrast or 1,
+      Process = true
     }
     
     ImGui.AddButton(tab, btnResetId, 'Reset', function()
@@ -298,10 +299,12 @@ if REPENTOGON then
       color.A = defaults.a or 0
       color.Brightness = defaults.brightness or 0
       color.Contrast = defaults.contrast or 1
+      color.Process = true
       ImGui.UpdateData(clrId, ImGuiData.ColorValues, { color.R, color.G, color.B })
       ImGui.UpdateData(fltStrengthId, ImGuiData.Value, color.A)
       ImGui.UpdateData(fltBrightnessId, ImGuiData.Value, color.Brightness)
       ImGui.UpdateData(fltContrastId, ImGuiData.Value, color.Contrast)
+      ImGui.UpdateData(chkProcessId, ImGuiData.Value, color.Process)
       
       func(color)
     end, true)
@@ -328,6 +331,12 @@ if REPENTOGON then
       
       func(color)
     end, color.Contrast, 0.01, -5.0, 5.0, '%.2f')
+    ImGui.AddCheckbox(tab, chkProcessId, 'Extra processing?', function(b)
+      color.Process = b
+      
+      func(color)
+    end, color.Process)
+    ImGui.SetHelpmarker(chkProcessId, 'Additional modifications for lava and the abandoned mineshaft')
   end
   
   function mod:doKColor(tab, clrId, btnResetId, inGameFunc, defaultsName)
