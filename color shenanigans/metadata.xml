@@ -10,7 +10,7 @@ This only applies to the current room. Moving to a new room will reset everythin
 If any colors don't seem to be working, make sure to set an alpha value greater than zero.
 
 The controls support clicking and dragging. You can also double-click to enter a number with your keyboard.</description>
-    <version>1.7</version>
+    <version>1.8</version>
     <visibility>Public</visibility>
     <tag id="Lua"/>
     <tag id="Tweaks"/>

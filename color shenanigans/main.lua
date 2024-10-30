@@ -459,6 +459,7 @@ if REPENTOGON then
       waterColor = { r = 0.04, g = 0.04, b = 0.04, a = 0.6, rMul = 1, gMul = 1, bMul = 1, aMul = 1 },
       waterEffectColor = { r = 1, g = 1, b = 1, a = 1 },
       colorModifier = { r = 1, g = 1, b = 1, a = 0, brightness = 0, contrast = 1 },
+      colorModifierTainted = { r = 1, g = 1.03, b = 1.1, a = 0.3, brightness = -0.15, contrast = 0.9 },
     }
     local fxParams = {
       { -- basement/cellar
@@ -691,6 +692,13 @@ if REPENTOGON then
     if name == 'waterColorMultiplier' then
       doWaterColorMultiplier = true
       name = 'waterColor'
+    end
+    
+    if not fxParam and name == 'colorModifier' then
+      local gotCharMenu, charMenu = pcall(CharacterMenu.GetSelectedCharacterMenu)
+      if gotCharMenu and charMenu == 1 then -- 0 = regular, 1 = tainted
+        name = 'colorModifierTainted'
+      end
     end
     
     local toReturn = defaults[name] or {}
