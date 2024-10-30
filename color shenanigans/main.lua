@@ -258,7 +258,7 @@ if REPENTOGON then
         room:GetFXParams().ShadowAlpha = defaults
       end
     end, true)
-    ImGui.AddDragFloat('shenanigansTabColorFx', fltShadowAlphaId, '', nil, 0.0, 0.01, 0.0, 5.0, '%.2f')
+    ImGui.AddDragFloat('shenanigansTabColorFx', fltShadowAlphaId, '', nil, mod:getDefaults('shadowAlpha'), 0.01, 0.0, 5.0, '%.2f')
     ImGui.AddCallback(fltShadowAlphaId, ImGuiCallback.Edited, function(f)
       if Isaac.IsInGame() then
         local room = game:GetRoom()
