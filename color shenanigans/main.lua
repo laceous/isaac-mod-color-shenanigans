@@ -68,7 +68,6 @@ if REPENTOGON then
     ImGui.AddTab('shenanigansTabBarColor', 'shenanigansTabColorWater', 'Water')
     ImGui.AddTab('shenanigansTabBarColor', 'shenanigansTabColorEntities', 'Entities')
     ImGui.AddTab('shenanigansTabBarColor', 'shenanigansTabColorFx', 'FX')
-    ImGui.AddTab('shenanigansTabBarColor', 'shenanigansTabColorMenu', 'Menu')
     
     local backdropTypes = {}
     for i = 0, BackdropType.NUM_BACKDROPS - 1 do -- sequential 0-60
@@ -233,6 +232,12 @@ if REPENTOGON then
         local room = game:GetRoom() -- game:SetColorModifier
         room:GetFXParams().ColorModifier = ColorModifier(color.R, color.G, color.B, color.A, color.Brightness, color.Contrast)
         room:UpdateColorModifier(true, not (game:IsPaused() and ImGui.IsVisible()), 0.015)
+      else
+        local gotActiveMenu, activeMenu = pcall(MenuManager.GetActiveMenu)
+        if gotActiveMenu then
+          MenuManager.SetColorModifier(ColorModifier(color.R, color.G, color.B, color.A, color.Brightness, color.Contrast), not ImGui.IsVisible(), 0.015)
+          mod.resetColorModifierMenu = true
+        end
       end
     end, 'colorModifier')
     
@@ -272,15 +277,6 @@ if REPENTOGON then
       local room = game:GetRoom()
       room:GetFXParams().ShadowColor = KColor(color.R, color.G, color.B, color.A)
     end, 'shadowColor')
-    
-    ImGui.AddElement('shenanigansTabColorMenu', '', ImGuiElement.SeparatorText, 'Color Modifier')
-    mod:doColorModifier('shenanigansTabColorMenu', 'shenanigansClrColorMenuModifier', 'shenanigansFltColorMenuModifierStrength', 'shenanigansFltColorMenuModifierBrightness', 'shenanigansFltColorMenuModifierContrast', 'shenanigansBtnColorMenuModifierReset', function(color)
-      local gotActiveMenu, activeMenu = pcall(MenuManager.GetActiveMenu)
-      if gotActiveMenu then
-        MenuManager.SetColorModifier(ColorModifier(color.R, color.G, color.B, color.A, color.Brightness, color.Contrast), not ImGui.IsVisible(), 0.015)
-        mod.resetColorModifierMenu = true
-      end
-    end, 'colorModifier')
   end
   
   function mod:doColorModifier(tab, clrId, fltStrengthId, fltBrightnessId, fltContrastId, btnResetId, func, defaultsName)
@@ -316,6 +312,7 @@ if REPENTOGON then
       
       func(color)
     end, color.R, color.G, color.B)
+    ImGui.SetHelpmarker(clrId, 'Available in-game and in the menu!')
     ImGui.AddDragFloat(tab, fltStrengthId, 'Strength', function(f)
       color.A = f
       
