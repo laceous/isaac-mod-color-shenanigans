@@ -208,10 +208,21 @@ if REPENTOGON then
     ImGui.AddElement('shenanigansTabColorEntities', '', ImGuiElement.SeparatorText, 'Entity Color')
     mod:doColor('shenanigansTabColorEntities', 'shenanigansClrColorEntityTint', 'shenanigansClrColorEntityOffset', 'shenanigansClrColorEntityColorize', 'shenanigansBtnColorEntityReset', function(color)
       for _, v in ipairs(Isaac.GetRoomEntities()) do
-        v.Color = Color(color.R, color.G, color.B, color.A, color.RO, color.GO, color.BO, color.RC, color.GC, color.BC, color.AC) -- v:GetSprite().Color
+        if v.Type ~= EntityType.ENTITY_EFFECT then
+          v.Color = Color(color.R, color.G, color.B, color.A, color.RO, color.GO, color.BO, color.RC, color.GC, color.BC, color.AC) -- v:GetSprite().Color
+        end
       end
       
       mod.evaluatePlayerCache = true
+    end)
+    
+    ImGui.AddElement('shenanigansTabColorEntities', '', ImGuiElement.SeparatorText, 'Effect Color')
+    mod:doColor('shenanigansTabColorEntities', 'shenanigansClrColorEffectTint', 'shenanigansClrColorEffectOffset', 'shenanigansClrColorEffectColorize', 'shenanigansBtnColorEffectReset', function(color)
+      for _, v in ipairs(Isaac.GetRoomEntities()) do
+        if v.Type == EntityType.ENTITY_EFFECT then
+          v.Color = Color(color.R, color.G, color.B, color.A, color.RO, color.GO, color.BO, color.RC, color.GC, color.BC, color.AC)
+        end
+      end
     end)
     
     ImGui.AddElement('shenanigansTabColorEntities', '', ImGuiElement.SeparatorText, 'Grid Entity Color')
