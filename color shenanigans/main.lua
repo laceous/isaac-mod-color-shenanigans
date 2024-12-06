@@ -95,13 +95,13 @@ if REPENTOGON then
     mod:doColor('shenanigansTabColorRoom', 'shenanigansClrColorFloorTint', 'shenanigansClrColorFloorOffset', 'shenanigansClrColorFloorColorize', 'shenanigansBtnColorFloorReset', function(color)
       local room = game:GetRoom()
       room:SetFloorColor(Color(color.R, color.G, color.B, color.A, color.RO, color.GO, color.BO, color.RC, color.GC, color.BC, color.AC))
-    end)
+    end, 'floorColor')
     
     ImGui.AddElement('shenanigansTabColorRoom', '', ImGuiElement.SeparatorText, 'Wall Color')
     mod:doColor('shenanigansTabColorRoom', 'shenanigansClrColorWallTint', 'shenanigansClrColorWallOffset', 'shenanigansClrColorWallColorize', 'shenanigansBtnColorWallReset', function(color)
       local room = game:GetRoom()
       room:SetWallColor(Color(color.R, color.G, color.B, color.A, color.RO, color.GO, color.BO, color.RC, color.GC, color.BC, color.AC))
-    end)
+    end, 'wallColor')
     
     local fltWaterAmountId = 'shenanigansFltColorWaterAmount'
     ImGui.AddElement('shenanigansTabColorWater', '', ImGuiElement.SeparatorText, 'Water Amount')
@@ -412,6 +412,26 @@ if REPENTOGON then
       color.GC = 0
       color.BC = 0
       color.AC = 0
+      
+      if Isaac.IsInGame() then
+        local level = game:GetLevel()
+        local roomDesc = level:GetCurrentRoomDesc()
+        
+        if roomDesc.Flags & RoomDescriptor.FLAG_RED_ROOM == RoomDescriptor.FLAG_RED_ROOM then
+          if defaultsName == 'floorColor' then
+            color.RC = 1
+            color.GC = 0
+            color.BC = 0
+            color.AC = 0.3
+          elseif defaultsName == 'wallColor' then
+            color.RC = 1
+            color.GC = 0.2
+            color.BC = 0.2
+            color.AC = 0.8
+          end
+        end
+      end
+      
       ImGui.UpdateData(clrTintId, ImGuiData.ColorValues, { color.R, color.G, color.B, color.A })
       ImGui.UpdateData(clrOffsetId, ImGuiData.ColorValues, { color.RO, color.GO, color.BO })
       ImGui.UpdateData(clrColorizeId, ImGuiData.ColorValues, { color.RC, color.GC, color.BC, color.AC })
@@ -665,12 +685,96 @@ if REPENTOGON then
       local stageType = level:GetStageType()
       local room = level:GetCurrentRoom()
       local backdrop = room:GetBackdropType()
+      local configStage = room:GetRoomConfigStage()
       
       local stage
       if game:IsGreedMode() then
         stage = greedStageMap[level:GetStage()]
       else
         stage = stageMap[level:GetStage()]
+        
+        if level:GetStage() == LevelStage.STAGE7 then -- the void
+          -- SPECIAL_ROOMS/THE_VOID/ASCENT
+          if configStage == StbType.BASEMENT then
+            stage = 1
+            stageType = StageType.STAGETYPE_ORIGINAL
+          elseif configStage == StbType.CELLAR then
+            stage = 1
+            stageType = StageType.STAGETYPE_WOTL
+          elseif configStage == StbType.BURNING_BASEMENT then
+            stage = 1
+            stageType = StageType.STAGETYPE_AFTERBIRTH
+          elseif configStage == StbType.CAVES then
+            stage = 2
+            stageType = StageType.STAGETYPE_ORIGINAL
+          elseif configStage == StbType.CATACOMBS then
+            stage = 2
+            stageType = StageType.STAGETYPE_WOTL
+          elseif configStage == StbType.FLOODED_CAVES then
+            stage = 2
+            stageType = StageType.STAGETYPE_AFTERBIRTH
+          elseif configStage == StbType.DEPTHS then
+            stage = 3
+            stageType = StageType.STAGETYPE_ORIGINAL
+          elseif configStage == StbType.NECROPOLIS then
+            stage = 3
+            stageType = StageType.STAGETYPE_WOTL
+          elseif configStage == StbType.DANK_DEPTHS then
+            stage = 3
+            stageType = StageType.STAGETYPE_AFTERBIRTH
+          elseif configStage == StbType.WOMB then
+            stage = 4
+            stageType = StageType.STAGETYPE_ORIGINAL
+          elseif configStage == StbType.UTERO then
+            stage = 4
+            stageType = StageType.STAGETYPE_WOTL
+          elseif configStage == StbType.SCARRED_WOMB then
+            stage = 4
+            stageType = StageType.STAGETYPE_AFTERBIRTH
+          elseif configStage == StbType.BLUE_WOMB then
+            stage = 5
+            stageType = StageType.STAGETYPE_ORIGINAL
+          elseif configStage == StbType.SHEOL then
+            stage = 6
+            stageType = StageType.STAGETYPE_ORIGINAL
+          elseif configStage == StbType.CATHEDRAL then
+            stage = 6
+            stageType = StageType.STAGETYPE_WOTL
+          elseif configStage == StbType.DARK_ROOM then
+            stage = 7
+            stageType = StageType.STAGETYPE_ORIGINAL
+          elseif configStage == StbType.CHEST then
+            stage = 7
+            stageType = StageType.STAGETYPE_WOTL
+          elseif configStage == StbType.DOWNPOUR then
+            stage = 1
+            stageType = StageType.STAGETYPE_REPENTANCE
+          elseif configStage == StbType.DROSS then
+            stage = 1
+            stageType = StageType.STAGETYPE_REPENTANCE_B
+          elseif configStage == StbType.MINES then
+            stage = 2
+            stageType = StageType.STAGETYPE_REPENTANCE
+          elseif configStage == StbType.ASHPIT then
+            stage = 2
+            stageType = StageType.STAGETYPE_REPENTANCE_B
+          elseif configStage == StbType.MAUSOLEUM then
+            stage = 3
+            stageType = StageType.STAGETYPE_REPENTANCE
+          elseif configStage == StbType.GEHENNA then
+            stage = 3
+            stageType = StageType.STAGETYPE_REPENTANCE_B
+          elseif configStage == StbType.CORPSE then
+            stage = 4
+            stageType = StageType.STAGETYPE_REPENTANCE
+          elseif configStage == StbType.MORTIS then
+            stage = 4
+            stageType = StageType.STAGETYPE_REPENTANCE_B
+          elseif configStage == StbType.HOME then
+            stage = 9
+            stageType = StageType.STAGETYPE_ORIGINAL -- STAGETYPE_WOTL
+          end
+        end
       end
       if not stage then
         stage = -1
