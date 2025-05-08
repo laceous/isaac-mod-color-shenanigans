@@ -6,9 +6,7 @@ if REPENTOGON then
   mod.resetColorModifierMenu = false
   mod.lastActiveMenu = -1
   
-  function mod:onRender()
-    mod:RemoveCallback(ModCallbacks.MC_MAIN_MENU_RENDER, mod.onRender)
-    mod:RemoveCallback(ModCallbacks.MC_POST_RENDER, mod.onRender)
+  function mod:onModsLoaded()
     mod:setupImGui()
   end
   
@@ -55,10 +53,13 @@ if REPENTOGON then
     return keys
   end
   
-  function mod:setupImGui()
+  function mod:setupImGuiMenu()
     if not ImGui.ElementExists('shenanigansMenu') then
       ImGui.CreateMenu('shenanigansMenu', '\u{f6d1} Shenanigans')
     end
+  end
+  
+  function mod:setupImGui()
     ImGui.AddElement('shenanigansMenu', 'shenanigansMenuItemColor', ImGuiElement.MenuItem, '\u{f53f} Color Shenanigans')
     ImGui.CreateWindow('shenanigansWindowColor', 'Color Shenanigans')
     ImGui.LinkWindowToElement('shenanigansWindowColor', 'shenanigansMenuItemColor')
@@ -839,8 +840,8 @@ if REPENTOGON then
     return toReturn
   end
   
-  mod:AddCallback(ModCallbacks.MC_MAIN_MENU_RENDER, mod.onRender)
-  mod:AddCallback(ModCallbacks.MC_POST_RENDER, mod.onRender)
+  mod:setupImGuiMenu()
+  mod:AddCallback(ModCallbacks.MC_POST_MODS_LOADED, mod.onModsLoaded)
   mod:AddCallback(ModCallbacks.MC_MAIN_MENU_RENDER, mod.onMainMenuRender)
   mod:AddCallback(ModCallbacks.MC_PRE_GAME_EXIT, mod.onGameExit)
   mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, mod.onNewRoom)
